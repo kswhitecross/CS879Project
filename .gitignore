@@ -1,3 +1,8 @@
+# project-specific files
+data/*
+indexes/*
+notebooks/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
