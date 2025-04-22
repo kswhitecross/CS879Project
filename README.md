@@ -57,15 +57,40 @@ To download and process the required data please run `python msmarco.py`, which 
 
 - `qrels: dict[str, dict[str, int]]`  
   Mapping each query ID to a dictonary mapping document IDs to their revelance scores.  Not complete (assume missing values are 0)
-### Project Hierarchy
+
+### Retrieval Models
+
+`retrieval_models.py` contains specialized implementations of the TF, QL and BM25 retrieval models that return document
+ scores on a per-word level, for each word in the document.  This allows the visualizer (TODO) to visualize what parts 
+ of each document contribute the most to the score.  
+
+In this project, we represent a scored document with the `ScoredDocument` class, which has the attributes:
+- `d_id: str` the document id
+- `score: float` the score of the document
+- `word_scores: dict[str, float]` a dictionary mapping each word in the document to the score in contributes to `score`
+- `missing_word_scores: dict[str, float]` a dictionary mapping any words that are not present in the document to their
+ impact on the score.  This is only currently used in the QL model.
+
+To get `ScoredDocument`s, you can call one of the retrieval functions, `compute_tf`, `compute_bm25`, `compute_ql`, which
+ each take in a list of queries, a list of documents, and potentially some parameters for the retrieval model as well, 
+ and return a `RetrievalModelScores` object.  Each `RetrievalModelScores` object has a single attribute, `doc_scores`, 
+ which is a dictionary mapping query IDs to dictionaries mapping document IDs to `ScoredDocument` objects.
+
+#### Computing metrics
+
+Retrieval metrics can be computed using `RetrievalModelScores.compute_metrics`, which uses `pytrec_eval` to compute 
+ retrieval metrics.
+
+
+## Project Hierarchy
 
 - `data/` is where processed data is stored
 - `indexes/` is a cache directory for storing built bm25s indexes
 - `notebooks/` contains miscellaneous `.ipynb` notebooks to test and develop this project
 - `msmarco.py` contains the code to download, process and save the necessary data for this project.
-- `retrieve.py` contains implementations of retrieval models
+- `retrieval_models.py` contains implementations of retrieval models
 
-### Requirements
+## Requirements
 - Python 3.12
 - ir_datasets
 - numpy
