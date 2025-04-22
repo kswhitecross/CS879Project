@@ -68,7 +68,7 @@ class RetrievalModelScores:
         for q_id, scoredocs in self.doc_scores.items():
             pairs = [(d_id, doc.score) for d_id, doc in scoredocs.items()]
             pairs.sort(key=lambda x: x[1], reverse=True)
-            self.doc_ranks[q_id] = {d_id: rank for (d_id, _), rank in zip(pairs, range(1, len(pairs + 1)))}
+            self.doc_ranks[q_id] = {d_id: rank for (d_id, _), rank in zip(pairs, range(1, len(pairs) + 1))}
 
     def compute_metrics(self, qrels: dict[str, dict[str, int]], metrics: dict=None) -> dict[str, dict[str, float]]:
         """
@@ -78,14 +78,14 @@ class RetrievalModelScores:
         # default metrics
         if metrics is None:
             metrics = {
-                'precision_cut.10',
-                'recall_cut.10',
+                'P.10',
+                'recall.10',
                 'map',
                 'ndcg_cut.10'
             }
 
         # build doc scores dict for pytrec eval
-        scores = {q_id: {d_id: doc.score for d_id, doc in q_doc_scores} for q_id, q_doc_scores in self.doc_scores}
+        scores = {q_id: {d_id: doc.score for d_id, doc in q_doc_scores.items()} for q_id, q_doc_scores in self.doc_scores.items()}
         evaluator = pytrec_eval.RelevanceEvaluator(qrels, metrics)
         return evaluator.evaluate(scores)
 
@@ -106,7 +106,7 @@ def compute_tf(queries: dict[str, list[str]], documents: dict[str, list[str]]) -
     per_word_scores = query_embs[:, np.newaxis, :] * doc_embs[np.newaxis, :, :]
 
     # shape (Q, D)
-    scores = per_word_scores.sum(axis=-1)
+    scores = per_word_scores.sum(axis=-1).tolist()
 
     # build retrieval model scores
     doc_scores = {}
@@ -116,7 +116,7 @@ def compute_tf(queries: dict[str, list[str]], documents: dict[str, list[str]]) -
         # include all terms in doc texts
         word_score_maps = embedding.vectors_to_word_scores(per_word_scores[i], doc_texts)
         for j, doc_id in enumerate(documents.keys()):
-            doc_scores[query_id][doc_id] = ScoredDocument(doc_id, scores[i, j], word_score_maps[j], {})
+            doc_scores[query_id][doc_id] = ScoredDocument(doc_id, scores[i][j], word_score_maps[j], {})
 
     return RetrievalModelScores(doc_scores)
 
@@ -142,14 +142,15 @@ def compute_bm25(queries: dict[str, list[str]], documents: dict[str, list[str]],
     dl = doc_embs.sum(axis=1)  # (n_d, )
     avg_dl = dl.mean()
     dl_norm = k_1 * (1 - b + b * (dl / avg_dl))  # (n_d, )
-    denominator = dl_norm[:, np.newaxis] + doc_embs  # (n_d, n_vocab)
+    eps = 1e-6
+    denominator = dl_norm[:, np.newaxis] + doc_embs + eps  # (n_d, n_vocab)
 
     # compute numerator
     numerator = (k_1 + 1) * query_embs[:, np.newaxis, :] * doc_embs[np.newaxis, :, :]  # (n_q, n_d, n_vocab)
 
     # compute bm25
-    per_word_bm25 = numerator / denominator[:, np.newaxis, :] * IDF[np.newaxis, np.newaxis, :]  # (n_q, n_d, n_vocab)
-    per_doc_scores = per_word_bm25.sum(axis=-1)  # (n_q, n_d)
+    per_word_bm25 = numerator / denominator[np.newaxis, :, :] * IDF[np.newaxis, np.newaxis, :]  # (n_q, n_d, n_vocab)
+    per_doc_scores = per_word_bm25.sum(axis=-1).tolist()  # (n_q, n_d)
 
     # build retrieval model scores
     doc_scores = {}
@@ -159,7 +160,7 @@ def compute_bm25(queries: dict[str, list[str]], documents: dict[str, list[str]],
         # include all terms in doc texts
         word_score_maps = embedding.vectors_to_word_scores(per_word_bm25[i], doc_texts)
         for j, doc_id in enumerate(documents.keys()):
-            doc_scores[query_id][doc_id] = ScoredDocument(doc_id, per_doc_scores[i, j], word_score_maps[j], {})
+            doc_scores[query_id][doc_id] = ScoredDocument(doc_id, per_doc_scores[i][j], word_score_maps[j], {})
 
     return RetrievalModelScores(doc_scores)
 
@@ -204,17 +205,19 @@ def compute_ql(queries: dict[str, list[str]], documents: dict[str, list[str]], l
     # indicator function for terms not in the document
     doc_missing_words = ~doc_embs.astype(bool)
 
+    eps = 1e-6
+
     # per_word_score for words in both document and query
     # (n_q, n_d, n_vocab)
     present_word_scores = (query_embs[:, np.newaxis, :] *
-                           np.log(doc_mle[np.newaxis, :, :] + collec_mle[np.newaxis, np.newaxis, :]))
+                           np.log(doc_mle[np.newaxis, :, :] + collec_mle[np.newaxis, np.newaxis, :] + eps))
 
     # per_word_score for words in the query and not in the document
     # (n_q, n_d, n_vocab)
     missing_word_scores = (query_embs[:, np.newaxis, :] * doc_missing_words[np.newaxis, :, :] *
-                           np.log(collec_mle[np.newaxis, np.newaxs, :]))
+                           np.log(collec_mle[np.newaxis, np.newaxis, :] + eps))
 
-    per_doc_scores = (present_word_scores + missing_word_scores).sum(axis=-1)  # (n_q, n_d)
+    per_doc_scores = (present_word_scores + missing_word_scores).sum(axis=-1).tolist()  # (n_q, n_d)
 
     # build retrieval model scores
     doc_scores = {}
@@ -225,7 +228,7 @@ def compute_ql(queries: dict[str, list[str]], documents: dict[str, list[str]], l
         present_word_maps = embedding.vectors_to_word_scores(present_word_scores[i], doc_texts)
         missing_word_maps = embedding.vectors_to_word_scores(missing_word_scores[i])
         for j, doc_id in enumerate(documents.keys()):
-            doc_scores[query_id][doc_id] = ScoredDocument(doc_id, per_doc_scores[i, j], present_word_maps[j],
+            doc_scores[query_id][doc_id] = ScoredDocument(doc_id, per_doc_scores[i][j], present_word_maps[j],
                                                           missing_word_maps[j])
 
     return RetrievalModelScores(doc_scores)

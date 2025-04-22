@@ -67,7 +67,7 @@ def main():
         for score, n_samples in sample_per_score.items():
             qrels[q_id][score] = random.sample(qrels[q_id][score], k=min(n_samples, len(qrels[q_id][score])))
 
-    ## for each query, sample the top-10 bm25 documents
+    ## for each query, sample the top-3 bm25 documents
     stemmer = Stemmer.Stemmer('english')
 
     # load, tokenize, and index corpus
@@ -97,14 +97,14 @@ def main():
     docs, scores = retriever.retrieve(queries_tok, k=20)
     for i, q_id in enumerate(q_ids):
         top_d_ids = list(map(str, docs[i].tolist()))
-        new_d_ids = [d_id for d_id in top_d_ids if d_id not in nonzero_qrels[q_id]][:5]
+        new_d_ids = [d_id for d_id in top_d_ids if d_id not in nonzero_qrels[q_id]][:3]
         qrels[q_id][0].extend(new_d_ids)
 
-    # for each query, sample 5 more random negatives
+    # for each query, sample 10 more random negatives
     for q_id in q_ids:
         rand_docids = np.random.choice(dataset.docs_count(), size=10+len(nonzero_qrels[q_id]), replace=False).tolist()
         rand_docids = list(map(str, rand_docids))
-        rand_negs = [d_id for d_id in rand_docids if d_id not in nonzero_qrels[q_id]][:5]
+        rand_negs = [d_id for d_id in rand_docids if d_id not in nonzero_qrels[q_id]][:10]
         qrels[q_id][0].extend(rand_negs)
 
     # collect and retrieve all doc ids, and flatten qrels
