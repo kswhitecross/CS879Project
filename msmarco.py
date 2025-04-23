@@ -35,8 +35,16 @@ class Stopper:
 
 
 def main():
+    # The meaning of life, the universe and everything... chr(42), aka '*'
     random.seed(42)
     np.random.seed(42)
+
+    # download the nltk punkt tokenizer if we need to
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        print("Missing tokenizer... Downloading")
+        nltk.download('punkt')
 
     # load the selected queries
     print("Loading queries...")
