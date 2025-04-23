@@ -24,9 +24,21 @@ In consideration of accessiblity, we are considering color blindness in our mode
 - Colorblind-friendly palettes: Use high-contrast, colorblind-friendly color schemes (e.g., Viridis, Color Universal Design).
 - Alternative visual encodings: Use patterns, shapes, or text labels in addition to color to convey information.
 
-## Technical Stuff
-
 ## Usage
+
+### Setup
+
+We recommend creating a fresh `miniconda` environment for this project.  To do this, install miniconda3 following [these instructions](https://www.anaconda.com/docs/getting-started/miniconda/install#linux-terminal-installer).  Then, create & activate a fresh conda environment using:
+```bash
+conda create -n CS879 python=3.12
+conda activate CS879
+```
+
+Next, install the requirements for the project with:
+
+```bash
+pip install -r requirements.txt
+```
 
 ### Creating Data
 
@@ -92,17 +104,9 @@ Retrieval metrics can be computed using `RetrievalModelScores.compute_metrics`, 
 
 ## Requirements
 - Python 3.12
-- ir_datasets
-- numpy
-- PyStemmer
-- bm25s
-- nltk
-- Pytrec_eval
-
-## Run Instructions
-
-Make sure you are using an up to date python, I used Python 3.10.8.
-
-pip install -r requirements.txt
-pip install bm25s PyStemmer
-python3 msmarco.py
+- `ir_datasets`
+- `numpy`
+- `PyStemmer`
+- `bm25s`
+- `nltk`
+- `Pytrec_eval`

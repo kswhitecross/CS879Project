@@ -8,3 +8,5 @@ seaborn
 ipywidgets
 colorcet
 PyStemmer
+bm25s
+notebook
