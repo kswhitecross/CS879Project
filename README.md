@@ -98,3 +98,11 @@ Retrieval metrics can be computed using `RetrievalModelScores.compute_metrics`, 
 - bm25s
 - nltk
 - Pytrec_eval
+
+## Run Instructions
+
+Make sure you are using an up to date python, I used Python 3.10.8.
+
+pip install -r requirements.txt
+pip install bm25s PyStemmer
+python3 msmarco.py

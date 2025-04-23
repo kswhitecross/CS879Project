@@ -1,0 +1,10 @@
+ir_datasets
+pytrec_eval
+nltk
+numpy
+scikit-learn
+matplotlib
+seaborn
+ipywidgets
+colorcet
+PyStemmer
