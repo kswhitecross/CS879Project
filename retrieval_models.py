@@ -203,13 +203,14 @@ def compute_ql(queries: dict[str, list[str]], documents: dict[str, list[str]], l
     collec_mle = lambda_p * doc_embs.sum(axis=0) / C  # (n_vocab)
 
     # indicator function for terms not in the document
-    doc_missing_words = ~doc_embs.astype(bool)
+    doc_present_words = doc_embs.astype(bool)
+    doc_missing_words = ~doc_present_words
 
     eps = 1e-6
 
     # per_word_score for words in both document and query
     # (n_q, n_d, n_vocab)
-    present_word_scores = (query_embs[:, np.newaxis, :] *
+    present_word_scores = doc_present_words[np.newaxis, :, :] * (query_embs[:, np.newaxis, :] *
                            np.log(doc_mle[np.newaxis, :, :] + collec_mle[np.newaxis, np.newaxis, :] + eps))
 
     # per_word_score for words in the query and not in the document
@@ -234,7 +235,7 @@ def compute_ql(queries: dict[str, list[str]], documents: dict[str, list[str]], l
     return RetrievalModelScores(doc_scores)
 
 
-def compute_QL_range(queries: dict[str, list[str]], documents: dict[str, list[str]], lambda_range: Iterable[float]):
+def compute_ql_range(queries: dict[str, list[str]], documents: dict[str, list[str]], lambda_range: Iterable[float]):
     """
     Returns a dict mapping each lambda value in lambda range to its resultant RetrievalModelScores computed from
      compute_QL with that lambda value.
@@ -243,3 +244,17 @@ def compute_QL_range(queries: dict[str, list[str]], documents: dict[str, list[st
     for lambda_p in lambda_range:
         ret_dict[lambda_p] = compute_ql(queries, documents, lambda_p)
     return ret_dict
+
+
+# testing and debugging
+if __name__ == "__main__":
+    import json
+    import os
+    with open('data/data.json') as f:
+        data = json.loads(f.read())
+    queries = data['queries_stopped_stemmed']
+    documents = data['documents_stopped_stemmed']
+
+    ql_results = compute_ql(queries, documents, 0.2)
+
+    print('Done!')
