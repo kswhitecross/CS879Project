@@ -29,7 +29,7 @@ class QueryDocumentVisualizer:
         load_btn.pack(side=tk.LEFT, padx=5)
         
         # Hyperparam selection
-        self.hyperparam_label = ttk.Label(control_frame, text="Hyperparameter:")
+        self.hyperparam_label = ttk.Label(control_frame, text="Hyperparameter (lambda):")
         self.hyperparam_label.pack(side=tk.LEFT, padx=5)
         
         # Create a frame for the slider and markers
@@ -545,7 +545,7 @@ class QueryDocumentVisualizer:
             label.grid(row=0, column=i, padx=5, pady=2, sticky='w')
         
         # Sort words by score
-        sorted_words = sorted(word_scores.items(), key=lambda x: x[1], reverse=True)
+        sorted_words = sorted(word_scores.items(), key=lambda x: x[1])
         
         # Take top N words if there are more
         display_words = sorted_words[:top_n]
