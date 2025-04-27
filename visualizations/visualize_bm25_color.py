@@ -850,9 +850,9 @@ class BM25DocumentVisualizer:
             score_frame.grid(row=0, column=2, padx=(45, 5), pady=2, sticky='w')
             
             # Calculate bar width based on score
-            bar_width = int(100 * (score / max_score)) if max_score > 0 else 0
-            bar = tk.Frame(score_frame, width=bar_width, height=10, bg="#FFFFFF")  # White bar
-            bar.pack(side='left')
+            # bar_width = int(100 * (score / max_score)) if max_score > 0 else 0
+            # bar = tk.Frame(score_frame, width=bar_width, height=10, bg="#FFFFFF")  # White bar
+            # bar.pack(side='left')
             
             # Add document text with improved wrapping
             doc_text = doc_data.get('documents_text', '')
