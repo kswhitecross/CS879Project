@@ -133,8 +133,18 @@ In the top right, there will be a button reading `Load Pickle File` to chose the
 
 ## Sample Screens
 
+### BM25 Images
 ![BM25 Dark Mode](./images/bm25_dark.png)
 
-![QL Light Mode](./images/ql_light.png)
+
+### QL Images
+<div style="display: flex; justify-content: space-between;">
+
+<img src="./images/ql_light.png" alt="QL Light Mode" width="45%"/>
+
+<img src="./images/ql_dark.png" alt="QL Dark Mode" width="45%"/>
+
+</div>
+
 
 
