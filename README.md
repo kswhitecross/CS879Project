@@ -111,6 +111,30 @@ Retrieval metrics can be computed using `RetrievalModelScores.compute_metrics`, 
 - `nltk`
 - `Pytrec_eval`
 
+## Run Instructions
+To run, run the desired visualization from the options in the table.
 
-import pickle
-file=pickle.load(open("ql_dict_wqueryinfo.pkl","rb"))
+| File Name            | Associated Pickle        |
+|----------------------|---------------------------|
+| visualize_bm25.py      | bm25_range.pkl            |
+| visualize_bm25.py     | bm25_range.pkl           |
+| visualize_ql_new.py     | ql_dict_wqueryinfo.pkl           |
+| visualize_ql_color.py     | ql_dict_wqueryinfo.pkl           |
+
+For example to run bm25
+```
+cd visualizations
+python3 visualize_bm25.py
+```
+
+In the top right, there will be a button reading `Load Pickle File` to chose the desired pickle file that contains the data.
+
+![Load Pickle](./images/load_pickle.png)
+
+## Sample Screens
+
+![BM25 Dark Mode](./images/bm25_dark.png)
+
+![QL Light Mode](./images/ql_light.png)
+
+
