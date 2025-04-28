@@ -116,10 +116,8 @@ To run, run the desired visualization from the options in the table.
 
 | File Name            | Associated Pickle        |
 |----------------------|---------------------------|
-| visualize_bm25.py      | bm25_range.pkl            |
-| visualize_bm25.py     | bm25_range.pkl           |
-| visualize_ql_new.py     | ql_dict_wqueryinfo.pkl           |
-| visualize_ql_color.py     | ql_dict_wqueryinfo.pkl           |
+| /visualizations/visualize_bm25.py      | /notebooks/bm25_range.pkl            |
+| /visualizations/visualize_ql_new.py     | /notebooks/ql_dict_wqueryinfo.pkl           |
 
 For example to run bm25
 ```
@@ -127,24 +125,19 @@ cd visualizations
 python3 visualize_bm25.py
 ```
 
-In the top right, there will be a button reading `Load Pickle File` to chose the desired pickle file that contains the data.
-
-![Load Pickle](./images/load_pickle.png)
+In the top right, there will be a button reading `Load Pickle File` to chose the desired pickle file that contains the data based on the above table.
 
 ## Sample Screens
-
+Below are sample screenshots of the light and dark mode versions of each query type visualization.
 ### BM25 Images
-![BM25 Dark Mode](./images/bm25_dark.png)
+<div style="display: flex; justify-content: space-between;">
+<img src="./images/bm25_light.png" alt="BM25 Light Mode" width="50%"/>
+<img src="./images/bm25_dark.png" alt="BM25 Dark Mode" width="50%"/>
+</div>
 
 
 ### QL Images
 <div style="display: flex; justify-content: space-between;">
-
-<img src="./images/ql_light.png" alt="QL Light Mode" width="45%"/>
-
-<img src="./images/ql_dark.png" alt="QL Dark Mode" width="45%"/>
-
+<img src="./images/ql_light.png" alt="QL Light Mode" width="50%"/>
+<img src="./images/ql_dark.png" alt="QL Dark Mode" width="50%"/>
 </div>
-
-
-
