@@ -103,10 +103,14 @@ Retrieval metrics can be computed using `RetrievalModelScores.compute_metrics`, 
 - `retrieval_models.py` contains implementations of retrieval models
 
 ## Requirements
-- Python 3.12
+- Python 3.8
 - `ir_datasets`
 - `numpy`
 - `PyStemmer`
 - `bm25s`
 - `nltk`
 - `Pytrec_eval`
+
+
+import pickle
+file=pickle.load(open("ql_dict_wqueryinfo.pkl","rb"))
