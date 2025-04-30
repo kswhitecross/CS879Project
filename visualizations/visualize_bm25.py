@@ -17,11 +17,35 @@ class BM25DocumentVisualizer:
         self.b_values = []
         self.current_query_id = None
         self.query_ids = []
+        self.is_light_mode = True
         
         # Create UI elements
         self.setup_ui()
     
     def setup_ui(self):
+        # Accessible color palette
+        self.style = ttk.Style()
+        self.style.theme_use('default')
+
+        self.light_mode = {
+            "bg_color": "#f0f4f8",
+            "frame_color": "#dbe2ef",
+            "button_color": "#3f72af",
+            "text_color": "#112d4e",
+            "highlight_color": "#f9f7f7",
+            "hover_color": "#28527a"
+        }
+        self.dark_mode = {
+            "bg_color": "#222831",
+            "frame_color": "#393e46",
+            "button_color": "#00adb5",
+            "text_color": "#eeeeee",
+            "highlight_color": "#393e46",
+            "hover_color": "#007b80"
+        }
+
+        self.is_light_mode = True  # Start in light mode
+
         # Top frame for basic controls
         top_control_frame = ttk.Frame(self.root, padding="10")
         top_control_frame.pack(fill=tk.X)
@@ -81,6 +105,10 @@ class BM25DocumentVisualizer:
         # Debug button
         debug_btn = ttk.Button(top_control_frame, text="Debug Info", command=self.show_debug_info)
         debug_btn.pack(side=tk.RIGHT, padx=5)
+
+        # Toggle button
+        self.toggle_button = ttk.Button(top_control_frame, text="☀️ / 🌙", command=self.toggle_mode, width=6)
+        self.toggle_button.pack(side=tk.LEFT, padx=5)
         
         # Second row of controls for query and display options
         second_control_frame = ttk.Frame(self.root, padding="10")
@@ -172,6 +200,25 @@ class BM25DocumentVisualizer:
         
         # Disable controls initially
         self.toggle_controls(False)
+    
+    def update_colors(self):
+        """Updates color theme light to dark and dark to light mode"""
+        colors = self.light_mode if self.is_light_mode else self.dark_mode
+
+        self.root.configure(bg=colors["bg_color"])
+        self.style.configure('TFrame', background=colors["frame_color"])
+        self.style.configure('TLabel', background=colors["frame_color"], foreground=colors["text_color"])
+        self.style.configure('TButton', background=colors["button_color"], foreground="white")
+        self.style.map('TButton',
+            background=[('active', colors["hover_color"])],
+            foreground=[('active', 'white')]
+        )
+        self.style.configure('TEntry', fieldbackground=colors["highlight_color"], foreground=colors["text_color"])
+
+    def toggle_mode(self):
+        """Toggles color scheme setting"""
+        self.is_light_mode = not self.is_light_mode
+        self.update_colors()
     
     def toggle_controls(self, enabled):
         """Fix to properly handle enabling/disabling controls"""
