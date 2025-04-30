@@ -117,7 +117,7 @@ To run, run the desired visualization from the options in the table.
 | File Name            | Associated Pickle        |
 |----------------------|---------------------------|
 | /visualizations/visualize_bm25.py      | /notebooks/bm25_range.pkl            |
-| /visualizations/visualize_ql_new.py     | /notebooks/ql_dict_wqueryinfo.pkl           |
+| /visualizations/visualize_ql.py     | /notebooks/ql_dict_wqueryinfo.pkl           |
 
 For example to run bm25
 ```
